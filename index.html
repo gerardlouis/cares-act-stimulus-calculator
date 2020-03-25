@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stimulus Calculator</title>
+    <script>
+        // Constants
+        var childLimits = [0, 25];
+        var childBonus = 500;
+        var incomeLimits = [2500, 75000, 150000];
+        var single = [1200, 75000];
+        var married = [2400, 150000];
+        var percent = 0.05;
+
+        function getCheckedValue(elements) {
+            var result = '';
+            for (var i = 0, length = elements.length; i < length; i++) {
+                if (elements[i].checked) {
+                    result = (elements[i].value);
+                    break;
+                }
+            }
+            return result;
+        }
+        
+        function isFormValid() {
+            var filingStatus = getCheckedValue(document.getElementsByName('filing-status'));
+            var qualifyingChildren = +document.getElementById('qualifying-children').value;
+            var qualifyingChildrenError = document.getElementById('qualifying-children-error');
+            var grossIncome = +document.getElementById('gross-income').value;
+            var grossIncomeError = document.getElementById('gross-income-error');
+            
+            if (qualifyingChildren < childLimits[0]) {
+                qualifyingChildrenError.innerText = "You cannot have a negative number of children!";
+                qualifyingChildren = childLimits[0];
+            } else if (qualifyingChildren > childLimits[1]) {
+                qualifyingChildrenError.innerText = "There's no way you have more than 25 kids!";
+                qualifyingChildren = childLimits[0];
+            }
+            else {
+                qualifyingChildrenError.innerText = "";
+            }
+            if (grossIncome < incomeLimits[0]) {
+                grossIncomeError.innerText ="Unfortunately, you need to have an income of $" + incomeLimits[0].toString() + " to qualify";
+            } else if (
+                filingStatus === 'single' &&
+                grossIncome > single[1] &&
+                (single[0] + (childBonus*qualifyingChildren) < ((grossIncome - single[1]) * percent))
+            ) {
+                grossIncomeError.innerText = "Unfortunately, your gross income is too much to qualify";
+            } else if (
+                filingStatus === 'married' &&
+                grossIncome > married[1] &&
+                (married[0] + (childBonus*qualifyingChildren) < ((grossIncome - married[1]) * percent))
+            ) {
+                grossIncomeError.innerText = "Unfortunately, your gross income is too much to qualify";
+            } else {
+                grossIncomeError.innerText = "";
+            }
+            return (qualifyingChildrenError.innerText.length === 0 && grossIncomeError.innerText.length === 0);
+        }
+
+        function evaluateForm() {
+            var rebateAmountElement = document.getElementById('rebate-amount');
+            if(isFormValid()) {
+                var filingStatus = getCheckedValue(document.getElementsByName('filing-status'));
+                var qualifyingChildren = +document.getElementById('qualifying-children').value;
+                var grossIncome = +document.getElementById('gross-income').value;
+                var rebateAmount = 0;
+
+                if (filingStatus === 'single') {
+                    if (grossIncome <= single[1]) {
+                        rebateAmount = single[0] + (childBonus*qualifyingChildren);
+                    } else {
+                        rebateAmount = (single[0] + (childBonus*qualifyingChildren)) - ((grossIncome - single[1]) * percent);
+                    }
+                } else if (filingStatus === 'married') {
+                    if (grossIncome <= married[1]) {
+                        rebateAmount = married[0] + (childBonus*qualifyingChildren);
+                    } else {
+                        rebateAmount = (married[0] + (childBonus*qualifyingChildren)) - ((grossIncome - married[1]) * percent);
+                    }
+                }
+
+                if (rebateAmount > 0) {
+                    rebateAmountElement.innerText = "$" + rebateAmount.toString();
+                }
+            } else {
+                rebateAmountElement.innerText = "";
+            }
+        }
+
+        function addListener() {
+            document
+                .getElementById('calculator')
+                .addEventListener('change', evaluateForm);
+        }
+    </script>
+</head>
+<body onload="addListener()">
+    <header>
+        <h1>Stimulus Calculator</h1>
+    </header>
+    <section id="main-content">
+        <h2>What is this?</h2>
+        
+        <p>
+            On March 25, 2020, the U.S. Senate passed Bill S.3548 (<a href=
+            "https://www.congress.gov/bill/116th-congress/senate-bill/3548/text"
+            >link to full text)</a>.
+        </p>
+        
+        <p>According to the summary:</p>
+        <blockquote>
+            The bill also provides funding for $1,200 tax rebates to individuals,
+            with additional $500 payments per qualifying child. The rebate
+            begins phasing out when incomes exceed $75,000 (or $150,000 for 
+            joint filers).
+        </blockquote>
+        <p>
+            The phasing out is calculated by subtracing 5% of the amount over
+            from the full tax rebate.
+        </p>
+        <p>
+            This calculator will calculate the tax rebate you qualify for. All
+            calculations are done inside this page, using javascript.
+        </p>
+
+        <hr>
+
+        <h3>Calculator</h3>
+        <form id="calculator">
+            <p>Filing Status:</p>
+            <input type="radio" name="filing-status" id="single" value="single">
+            <label for="single">Single</label>
+            <input type="radio" name="filing-status" id="married" value="married">
+            <label for="married">Married</label>
+            <br>
+            <label for="qualifying-children"># of Qualifying Children</label>
+            <input type="number" id="qualifying-children" name="qualifying-children" min="0" max="25">
+            <p id="qualifying-children-error"></p>
+            <br>
+            <label for="gross-income">Gross Income for 2019</label>
+            <input type="number" id="gross-income" name="gross-income" min="2500" max="500000" step="1">
+            <p id="gross-income-error"></p>
+        </form>
+        <p id="rebate-amount"></p>
+    </section>
+    <script>
+
+    </script>
+</body>
+</html>
