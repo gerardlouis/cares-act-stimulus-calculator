@@ -4,6 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stimulus Calculator</title>
+    <style>
+        .error {
+            color: #f00;
+        }
+
+        .bold {
+            font-weight: bold;
+        }
+    </style>
     <script>
         // Constants
         var childLimits = [0, 25];
@@ -84,7 +93,7 @@
                 }
 
                 if (rebateAmount > 0) {
-                    rebateAmountElement.innerText = "$" + rebateAmount.toString();
+                    rebateAmountElement.innerText = "Rebate Amount: $" + rebateAmount.toString();
                 }
             } else {
                 rebateAmountElement.innerText = "";
@@ -131,22 +140,22 @@
 
         <h3>Calculator</h3>
         <form id="calculator">
-            <p>Filing Status:</p>
+            <p>Filing Status</p>
             <input type="radio" name="filing-status" id="single" value="single">
             <label for="single">Single</label>
             <input type="radio" name="filing-status" id="married" value="married">
             <label for="married">Married</label>
             <br>
             <br>
-            <label for="qualifying-children"># of Qualifying Children</label><br>
-            <input type="number" id="qualifying-children" name="qualifying-children" min="0" max="25">
-            <p id="qualifying-children-error"></p>
+            <label for="qualifying-children"># of Qualifying Children</label><br><br>
+            <input type="number" id="qualifying-children" name="qualifying-children" min="0" max="25" placeholder="0-25">
+            <p id="qualifying-children-error" class="error"></p>
             <br>
-            <label for="gross-income">Gross Income for 2019</label><br>
-            <input type="number" id="gross-income" name="gross-income" min="2500" max="500000" step="1">
-            <p id="gross-income-error"></p>
+            <label for="gross-income">Gross Income for 2019</label><br><br>
+            <input type="number" id="gross-income" name="gross-income" min="2500" max="500000" step="1" placeholder="2500+">
+            <p id="gross-income-error" class="error"></p>
         </form>
-        <p id="rebate-amount"></p>
+        <p id="rebate-amount" class="bold"></p>
     </section>
 </body>
 </html>
